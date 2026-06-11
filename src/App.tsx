@@ -871,6 +871,7 @@ export default function App() {
       canvas.height = rect.height * window.devicePixelRatio;
     };
     scaleAdjust();
+    window.addEventListener("resize", scaleAdjust);
 
     let spawnTimer = 0;
     let collectibleTimer = 0;
@@ -1982,6 +1983,7 @@ export default function App() {
     animationFrameId.current = requestAnimationFrame(updateRenderLoop);
 
     return () => {
+      window.removeEventListener("resize", scaleAdjust);
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
   }, [gameState, muted]);
@@ -2735,150 +2737,69 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#07080b] text-gray-100 flex flex-col lg:flex-row font-sans overflow-hidden selection:bg-[#f2a900] selection:text-[#07080b]">
+    <div className="relative w-screen h-screen bg-[#07080b] text-gray-100 flex items-center justify-center font-sans overflow-hidden selection:bg-[#f2a900] selection:text-[#07080b]">
       {/* Visual Ambient Scanlines */}
       <div className="pointer-events-none absolute inset-0 z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.2)_50%)] bg-[size:100%_4px] opacity-[0.05]" />
 
-      {/* SIDEBAR DASHBOARD: Logo and Stats */}
-      <div className="w-full lg:w-[350px] p-6 lg:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#222530] bg-[#0c0d12] z-10 shrink-0">
-        <div>
-          {/* Neon Logo Airport Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <span className="p-3 rounded-xl bg-gradient-to-br from-[#1a1b24] to-[#07080b] border border-[#f2a900] text-[#f2a900] shadow-[0_0_15px_rgba(242,169,0,0.15)]">
-              <Flame className="w-6 h-6 animate-pulse" />
-            </span>
-            <div>
-              <h1 className="text-xl lg:text-2xl font-black tracking-wider text-[#f2a900] uppercase font-sans">
-                OVERBOOKED:
-              </h1>
-              <p className="text-xs text-[#6a6e7c] tracking-widest font-mono uppercase font-semibold">
-                Baggage Claim v1.0
-              </p>
-            </div>
-          </div>
-
-          <p className="text-xs text-[#8f929d] font-mono leading-relaxed mb-6 bg-[#121319] p-3 rounded-lg border border-[#222530]">
-            🏃‍♂️ Run backward on the belt! Avoid suitcases, laser scanners, runaway beverage carts, and rogue pets to stay out of the shredder!
-          </p>
-
-          {/* Quick HUD Counters */}
-          <div className="space-y-3 font-mono">
-            
-            {/* Distance Survived */}
-            <div className="p-4 rounded-xl bg-gradient-to-r from-zinc-950/90 to-zinc-950/40 border border-[#222530] space-y-1.5">
-              <div className="text-[10px] text-gray-500 flex items-center gap-1.5 font-bold uppercase tracking-widest">
-                <Gauge className="w-3.5 h-3.5 text-emerald-400" /> SURVIVED DISTANCE
-              </div>
-              <div className="text-3xl font-black text-emerald-400 tracking-tight">
-                {distance} <span className="text-xs text-gray-500 font-semibold">METERS</span>
-              </div>
-              <p className="text-[10px] text-gray-500 font-bold">Best Record: {maxDistance}m</p>
-            </div>
-
-            {/* Fragile Stickers points */}
-            <div className="p-4 rounded-xl bg-gradient-to-r from-zinc-950/90 to-zinc-950/40 border border-[#222530] space-y-1.5">
-              <div className="text-[10px] text-gray-500 flex items-center gap-1.5 font-bold uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5 text-pink-500" /> FRAGILE COLLECTED
-              </div>
-              <div className="text-3xl font-black text-pink-500 tracking-tight">
-                {score} <span className="text-xs text-gray-500 font-semibold font-mono">PTS</span>
-              </div>
-              <p className="text-[10px] text-gray-500 font-bold">Best Score: {highScore} pts</p>
-            </div>
-
-            {/* Total Vault points for shopping */}
-            <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#170e1b] to-zinc-950/40 border border-purple-950/50 space-y-1">
-              <div className="text-[9px] text-[#ae26ff] flex items-center gap-1.5 font-bold uppercase tracking-widest font-mono">
-                <Trophy className="w-3 h-3 text-[#ae26ff]" /> FRAGILE REWARDS VAULT
-              </div>
-              <div className="text-xl font-black text-pink-400 tracking-tight flex justify-between items-center font-mono">
-                <span>{totalPoints}</span>
-                <span className="text-[9px] text-gray-500 font-medium">TOTAL BAL</span>
-              </div>
-            </div>
-
-            {/* Conveyor Belt Velocity */}
-            <div className="p-4 rounded-xl bg-gradient-to-r from-zinc-950/90 to-zinc-950/40 border border-[#222530] space-y-1.5">
-              <div className="text-[10px] text-gray-500 flex items-center gap-1.5 font-bold uppercase tracking-widest">
-                <HelpCircle className="w-3.5 h-3.5 text-[#f2a900]" /> BELT CONVEYOR SPEED
-              </div>
-              <div className="text-xl font-black text-gray-300 flex justify-between">
-                <span>SPEED:</span>
-                <span className="text-[#f2a900]">{beltSpeedKph} <span className="text-xs text-gray-500">KPH</span></span>
-              </div>
-              <div className="text-[9px] text-[#6a6e7c] leading-tight">
-                 Increases every 15 seconds! Run forward [W] or [UP] to stay alive.
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Action Bottom Control panel */}
-        <div className="mt-6 space-y-3 font-mono">
-          
-          {/* Active Powerup counters if active */}
-          {(energyDrinkTime > 0 || magneticTime > 0) && (
-            <div className="p-3 rounded-lg border border-cyan-800/60 bg-cyan-950/30 text-xs space-y-2">
-              <div className="text-[9px] text-cyan-400 font-bold uppercase">ACTIVE POWERUPS EFFECTS</div>
-              {energyDrinkTime > 0 && (
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-[#00ccff]">⚡ ENERGY SPEED (INVUL):</span>
-                  <span className="font-bold text-[#00ccff]">{energyDrinkTime}s</span>
-                </div>
-              )}
-              {magneticTime > 0 && (
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-[#f2a900]">🧲 STICKY BOOTS MAGNET:</span>
-                  <span className="font-bold text-[#f2a900]">{magneticTime}s</span>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="flex gap-2">
-            <button
-              onClick={toggleSound}
-              className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-bold transition-all ${
-                muted
-                  ? "border-zinc-800 text-gray-500 bg-zinc-900/40"
-                  : "border-[#f2a900]/30 text-[#f2a900] bg-[#f2a900]/5 hover:bg-[#f2a900]/10"
-              }`}
-            >
-              {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              {muted ? "AUDIO OFF" : "AUDIO ON"}
-            </button>
-
-            {/* Export Standalone HTML file for CrazyGames */}
-            <button
-              onClick={handleExportGame}
-              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-pink-500/30 text-pink-400 bg-pink-500/5 hover:bg-pink-500/15 text-xs font-bold transition-all"
-              title="Download standalone single HTML file ready to upload to CrazyGames!"
-            >
-              <Download className="w-4 h-4" />
-              EXPORT standalone
-            </button>
-          </div>
-
-          <div className="text-[9px] text-gray-600 leading-tight">
-            Designed for desktop & mobile inputs. Direct deployment optimized.
-          </div>
-        </div>
-      </div>
-
       {/* MAIN VIEWPORT: Hectic Conveyor runner Canvas */}
-      <div className="flex-1 relative flex flex-col items-center justify-center bg-[#07080a] p-4 lg:p-6 select-none">
+      <div className="w-full h-full flex items-center justify-center bg-[#07080a] p-0 md:p-3 select-none overflow-hidden">
         
         {/* Responsive Canvas Frame wrapper */}
         <div
           id="canvas-wrap"
-          className="relative w-full max-w-[520px] aspect-[3/4] rounded-2xl border-4 border-[#222530] bg-[#121319] overflow-hidden shadow-2xl transition-transform"
+          className="relative rounded-none md:rounded-2xl border-0 md:border-4 border-[#222530] bg-[#121319] overflow-hidden shadow-2xl transition-all"
+          style={{
+            width: "min(100vw, 100vh * 0.75)",
+            height: "min(100vh, 100vw * 1.3333)",
+          }}
         >
           <canvas
             ref={canvasRef}
             className="absolute inset-0 w-full h-full block"
             style={{ touchAction: "none" }}
           />
+
+          {/* FLOATING HUD OVERLAY DURING PLAY */}
+          {gameState === "PLAYING" && (
+            <div className="absolute top-3 inset-x-3 flex flex-col gap-2 pointer-events-none z-30 font-mono text-[10px]">
+              {/* Core metrics row */}
+              <div className="flex justify-between items-center bg-black/75 border border-zinc-800/40 backdrop-blur-md px-3 py-2 rounded-xl">
+                <div className="flex items-center gap-1">
+                  <Gauge className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-gray-400">DIST:</span>
+                  <span className="font-extrabold text-emerald-400">{distance}m</span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-[#f2a900] animate-pulse" />
+                  <span className="text-gray-400">SPEED:</span>
+                  <span className="font-extrabold text-[#f2a900]">{beltSpeedKph} KPH</span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+                  <span className="text-gray-400">PTS:</span>
+                  <span className="font-extrabold text-pink-500">{score}</span>
+                </div>
+              </div>
+
+              {/* Active powerups drawer inside HUD */}
+              {(energyDrinkTime > 0 || magneticTime > 0) && (
+                <div className="flex flex-wrap gap-1.5 justify-center bg-cyan-950/60 border border-cyan-800/40 backdrop-blur-md p-1.5 rounded-lg pointer-events-none">
+                  {energyDrinkTime > 0 && (
+                    <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[8px] font-bold flex items-center gap-1">
+                      ⚡ ENERGY: {energyDrinkTime}s
+                    </span>
+                  )}
+                  {magneticTime > 0 && (
+                    <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold flex items-center gap-1">
+                      🧲 MAGNET: {magneticTime}s
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* OVERLAY: START MENU */}
           <AnimatePresence>
@@ -3029,6 +2950,30 @@ export default function App() {
                       </button>
                     </>
                   )}
+
+                  {/* UTILITY FOOTER ROWS */}
+                  <div className="flex gap-2 justify-center pt-2.5 border-t border-zinc-800/80 mt-2">
+                    <button
+                      onClick={toggleSound}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-[10px] font-bold transition-all font-mono ${
+                        muted
+                          ? "border-zinc-800 text-gray-500 bg-zinc-900/40"
+                          : "border-[#f2a900]/30 text-[#f2a900] bg-[#f2a900]/5 hover:bg-[#f2a900]/10"
+                      }`}
+                    >
+                      {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                      {muted ? "MUTED" : "SOUND ON"}
+                    </button>
+
+                    <button
+                      onClick={handleExportGame}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-pink-500/30 text-pink-400 bg-pink-500/5 hover:bg-pink-500/15 text-[10px] font-bold transition-all font-mono"
+                      title="Download standalone single HTML file ready to upload to CrazyGames!"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      EXPORT GAME
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             )}
