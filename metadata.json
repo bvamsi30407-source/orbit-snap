@@ -1,6 +1,6 @@
 {
-  "name": "Orbit Snap",
-  "description": "A minimalist, high-speed, 1-click cyberpunk circular arcade game. Snap between orbits, avoid hazards and gaps, and collect yellow data cubes.",
+  "name": "Overbooked: Baggage Claim",
+  "description": "An action-packed endless runner where you play as a baggage handler running backward on a chaotic luggage conveyor belt, dodging rogue suitcases, scanners, runaway food carts, and loose pets to stay out of the shredder.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
