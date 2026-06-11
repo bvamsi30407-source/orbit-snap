@@ -1,0 +1,6 @@
+{
+  "name": "Orbit Snap",
+  "description": "A minimalist, high-speed, 1-click cyberpunk circular arcade game. Snap between orbits, avoid hazards and gaps, and collect yellow data cubes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
