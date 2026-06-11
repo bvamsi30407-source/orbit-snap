@@ -2952,10 +2952,10 @@ export default function App() {
                   )}
 
                   {/* UTILITY FOOTER ROWS */}
-                  <div className="flex gap-2 justify-center pt-2.5 border-t border-zinc-800/80 mt-2">
+                  <div className="flex justify-center pt-2.5 border-t border-zinc-800/80 mt-2">
                     <button
                       onClick={toggleSound}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-[10px] font-bold transition-all font-mono ${
+                      className={`w-full flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl border text-[10px] font-bold transition-all font-mono ${
                         muted
                           ? "border-zinc-800 text-gray-500 bg-zinc-900/40"
                           : "border-[#f2a900]/30 text-[#f2a900] bg-[#f2a900]/5 hover:bg-[#f2a900]/10"
@@ -2963,15 +2963,6 @@ export default function App() {
                     >
                       {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                       {muted ? "MUTED" : "SOUND ON"}
-                    </button>
-
-                    <button
-                      onClick={handleExportGame}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-pink-500/30 text-pink-400 bg-pink-500/5 hover:bg-pink-500/15 text-[10px] font-bold transition-all font-mono"
-                      title="Download standalone single HTML file ready to upload to CrazyGames!"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      EXPORT GAME
                     </button>
                   </div>
                 </div>
